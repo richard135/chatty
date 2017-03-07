@@ -5,7 +5,7 @@
   "scripts": {
     "lint": "eslint src",
     "start": "node server.js"
-  },
+    },
   "repository": {
     "type": "git",
     "url": "https://github.com/noahlotzer/react-simple-boilerplate.git"
