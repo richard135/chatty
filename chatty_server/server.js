@@ -19,7 +19,7 @@ const wss = new SocketServer({ server });
 // the ws parameter in the callback.
 let i = 0;
 function randomColor(){
-let colorArray = ["#a3fd7f","red","blue","yellow"];
+let colorArray = ["#a3fd7f","red","blue","purple"];
   i++;
   if (i < 4) {
     return color = colorArray[i];
