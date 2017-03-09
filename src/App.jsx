@@ -6,32 +6,37 @@ import MessageList from './MessageList.jsx';
 class App extends Component {
   constructor(props){
     super(props);
+    this.closeSocket = () => {};
+    this.socket = new WebSocket("ws://localhost:3001");
+
     this.state = {
       currentUser: {name: "Bob"},
-      messages: [
-        {
-          username: "Bob",
-          content: "Has anyone seen my marbles?",
-        },
-        {
-          username: "Anonymous",
-          content: "No, I think you lost them. You lost your marbles Bob. You lost them for good."
-        }
-      ]
+      messages: []
     };
   }
 
   componentDidMount() {
-    console.log("componentDidMount <App />");
-    setTimeout(() => {
-    }, 3000);
+    this.socket.onopen = () => {
+      console.log("Got connected to server.");
+    }
   }
+
 
   handleMessage(content) {
-    let messages = this.state.messages.concat({username: this.state.currentUser.name, content: content});
-    this.setState({messages:messages})
+    let msgToServer = {content:content, currentUser:this.state.currentUser.name}
+    this.socket.send(JSON.stringify(msgToServer));
+
+    this.socket.onmessage = (event) => {
+      console.log(event.data);
+    let msgFromServer = JSON.parse(event.data);
+    let messages = this.state.messages.concat(msgFromServer);
+    this.setState({messages:messages});
+    }
   }
 
+  handleUserChange(user){
+    this.setState({currentUser:{name:user}})
+  }
 
   render() {
     return (
@@ -40,7 +45,8 @@ class App extends Component {
           <a href="/" className="navbar-brand">Chatty</a>
         </nav>
         <MessageList messages={this.state.messages} newMessage={this.newMessage}/>
-        <ChatBar currentUser={this.state.currentUser.name} handleMessage={this.handleMessage.bind(this)}/>
+        <ChatBar currentUser={this.state.currentUser.name}
+        handleMessage={this.handleMessage.bind(this)} handleUserChange={this.handleUserChange.bind(this)}/>
       </div>
     );
   }
