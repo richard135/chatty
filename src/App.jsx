@@ -19,23 +19,40 @@ class App extends Component {
     this.socket.onopen = () => {
       console.log("Got connected to server.");
     }
+    this.socket.onmessage = (event) => {
+      let data = JSON.parse(event.data);
+      switch(data.type){
+        case "incomingMessage":
+          let messages = this.state.messages.concat(data);
+          this.setState({messages:messages});
+          break;
+        case "incomingNotification":
+          let notification = this.state.messages.concat(data);
+          this.setState({messages:notification});
+          break;
+        default:
+      }
+    }
   }
 
 
   handleMessage(content) {
-    let msgToServer = {content:content, currentUser:this.state.currentUser.name}
-    this.socket.send(JSON.stringify(msgToServer));
-
-    this.socket.onmessage = (event) => {
-      console.log(event.data);
-    let msgFromServer = JSON.parse(event.data);
-    let messages = this.state.messages.concat(msgFromServer);
-    this.setState({messages:messages});
+    let msgToServer = {
+      content:content,
+      currentUser:this.state.currentUser.name,
+      type: "postMessage"
     }
+    this.socket.send(JSON.stringify(msgToServer));
   }
 
   handleUserChange(user){
-    this.setState({currentUser:{name:user}})
+    let userChangeToServer = {
+      type:"postNotification",
+      content:`${this.state.currentUser.name} to ${user}`,
+      user: user
+    }
+    this.setState({currentUser:{name:user}});
+    this.socket.send(JSON.stringify(userChangeToServer));
   }
 
   render() {
@@ -44,7 +61,7 @@ class App extends Component {
         <nav className="navbar">
           <a href="/" className="navbar-brand">Chatty</a>
         </nav>
-        <MessageList messages={this.state.messages} newMessage={this.newMessage}/>
+        <MessageList messages={this.state.messages}/>
         <ChatBar currentUser={this.state.currentUser.name}
         handleMessage={this.handleMessage.bind(this)} handleUserChange={this.handleUserChange.bind(this)}/>
       </div>
