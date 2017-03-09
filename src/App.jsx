@@ -11,7 +11,8 @@ class App extends Component {
 
     this.state = {
       currentUser: {name: "Bob"},
-      messages: []
+      messages: [],
+      userCount: ""
     };
   }
 
@@ -30,6 +31,8 @@ class App extends Component {
           let notification = this.state.messages.concat(data);
           this.setState({messages:notification});
           break;
+        case "userCount":
+          this.setState({userCount:data.totalUsers})
         default:
       }
     }
@@ -60,6 +63,7 @@ class App extends Component {
       <div>
         <nav className="navbar">
           <a href="/" className="navbar-brand">Chatty</a>
+          <a href="/" className="navbar-user">{this.state.userCount} users online</a>
         </nav>
         <MessageList messages={this.state.messages}/>
         <ChatBar currentUser={this.state.currentUser.name}
