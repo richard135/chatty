@@ -59,13 +59,8 @@ body {
 }
 
 .chat-image{
-  overflow: hidden;
-  margin: 5px;
-  padding: 0 10px;
-  height: 30%;
+  display:block;
   width: 60%;
-  float: left;
-  flex:8;
 }
 
 .message-content {
